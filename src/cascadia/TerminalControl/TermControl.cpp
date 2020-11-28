@@ -14,6 +14,7 @@
 
 #include "TermControl.g.cpp"
 #include "TermControlAutomationPeer.h"
+#include <regex>
 
 using namespace ::Microsoft::Console::Types;
 using namespace ::Microsoft::Console::VirtualTerminal;
@@ -2909,6 +2910,17 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
     // - e: The DragEventArgs from the Drop event
     // Return Value:
     // - <none>
+    std::wstring _ReplaceString(std::wstring subject, const std::wstring& search, const std::wstring& replace)
+    {
+        size_t pos = 0;
+        while ((pos = subject.find(search, pos)) != std::wstring::npos)
+        {
+            subject.replace(pos, search.length(), replace);
+            pos += replace.length();
+        }
+        return subject;
+    }
+
     winrt::fire_and_forget TermControl::_DragDropHandler(Windows::Foundation::IInspectable const& /*sender*/,
                                                          DragEventArgs const e)
     {
@@ -2943,8 +2955,18 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
                         fullPath.insert(0, L"\"");
                         fullPath += L"\"";
                     }
-
-                    allPaths += fullPath;
+                    std::wstring winDisk[] = { L"C:", L"D:", L"E:", L"F:", L"G:", L"H:", L"I:", L"J:", L"K:", L"L:", L"M:", L"N:", L"O:", L"P:", L"Q:", L"R:", L"S:", L"T:", L"U:", L"V:", L"W:", L"X:", L"Y:", L"Z:" };
+                    std::wstring wslDisk[] = { L"/mnt/c", L"/mnt/d", L"/mnt/e", L"/mnt/f", L"/mnt/g", L"/mnt/h", L"/mnt/i", L"/mnt/j", L"/mnt/k", L"l", L"/mnt/m", L"/mnt/n", L"/mnt/o", L"/mnt/p", L"/mnt/q", L"/mnt/r", L"/mnt/s", L"/mnt/t", L"/mnt/u", L"/mnt/v", L"/mnt/w", L"/mnt/x", L"/mnt/y", L"/mnt/z" };
+                    fullPath = _ReplaceString(fullPath, L"\\", L"/");
+                    for (int i = 0; i < 24; i++)
+                    {
+                        if (fullPath._Starts_with(winDisk[i]))
+                        {
+                            fullPath = _ReplaceString(fullPath, winDisk[i], wslDisk[i]);
+                        }
+                    }
+                    
+                    allPaths += L"\"" + fullPath + L"\"";
                 }
                 _SendInputToConnection(allPaths);
             }
