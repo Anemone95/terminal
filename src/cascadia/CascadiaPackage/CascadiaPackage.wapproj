@@ -30,7 +30,7 @@
   <PropertyGroup Condition="Exists('CascadiaPackage_TemporaryKey.pfx')">
     <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <PackageCertificateKeyFile>CascadiaPackage_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <!--PackageCertificateKeyFile>CascadiaPackage_TemporaryKey.pfx</PackageCertificateKeyFile-->
   </PropertyGroup>
   <ItemGroup Condition="Exists('CascadiaPackage_TemporaryKey.pfx')">
     <None Include="CascadiaPackage_TemporaryKey.pfx" />
@@ -54,7 +54,6 @@
     <PRIResource Include="Resources\Resources.resw" />
     <OCResourceDirectory Include="Resources" />
   </ItemGroup>
-
   <!-- This is picked up by CascadiaResources.build.items. -->
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'==''">
     <WindowsTerminalAssetSuffix>-Dev</WindowsTerminalAssetSuffix>
@@ -62,7 +61,6 @@
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='Preview'">
     <WindowsTerminalAssetSuffix>-Pre</WindowsTerminalAssetSuffix>
   </PropertyGroup>
-
   <Import Project="$(MSBuildThisFileDirectory)..\CascadiaResources.build.items" />
   <Import Project="$(OpenConsoleDir)src\wap-common.build.post.props" />
   <ItemGroup>
@@ -72,7 +70,6 @@
     <ProjectReference Include="..\ShellExtension\WindowsTerminalShellExt.vcxproj" />
     <ProjectReference Include="..\wt\wt.vcxproj" />
   </ItemGroup>
-
   <Target Name="OpenConsoleStompSourceProjectForWapProject" BeforeTargets="_ConvertItems">
     <ItemGroup>
       <!-- Stomp all "SourceProject" values for all incoming dependencies to flatten the package. -->
@@ -114,6 +111,32 @@
     <WapProjBeforeGenerateAppxManifestDependsOn>
         $([MSBuild]::Unescape('$(WapProjBeforeGenerateAppxManifestDependsOn.Replace('_RemoveAllNonWapUWPItems', '_OpenConsoleRemoveAllNonWapUWPItems'))'))
     </WapProjBeforeGenerateAppxManifestDependsOn>
+    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <PackageCertificateThumbprint>B1C8DB355C6F6E18398318AE9FB6F48CCC68044E</PackageCertificateThumbprint>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppInstallerUri>D:\temp</AppInstallerUri>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <Target Name="_OpenConsoleRemoveAllNonWapUWPItems">
     <ItemGroup>
@@ -124,7 +147,6 @@
       <AppxUploadPackagePayload Remove="@(AppxUploadPackagePayload)" Condition="'%(Extension)' == '.pri' and '%(Filename)' != 'resources'" />
     </ItemGroup>
   </Target>
-
   <!-- **BEGIN VC LIBS HACK** -->
   <!--
     For our release builds, we're just going to integrate the UWPDesktop CRT into our package and delete the package dependencies.
@@ -139,7 +161,6 @@
       <FrameworkSdkReference Remove="@(FrameworkSdkReference)" />
     </ItemGroup>
   </Target>
-
   <!-- This target removes the FrameworkSdkPackages from before the *desktop bridge* manifest generation happens. -->
   <Target Name="_OpenConsoleStripAllDependenciesFromPackageSecondManifest" BeforeTargets="_GenerateDesktopBridgeAppxManifest" DependsOnTargets="_ResolveVCLibDependencies">
     <ItemGroup Condition="'$(WindowsTerminalOfficialBuild)'=='true'">
@@ -147,7 +168,6 @@
     </ItemGroup>
   </Target>
   <!-- **END VC LIBS HACK** -->
-
   <!-- This is required to get the package dependency in the AppXManifest. -->
   <Import Project="..\..\..\packages\Microsoft.UI.Xaml.2.5.0-prerelease.200609001\build\native\Microsoft.UI.Xaml.targets" Condition="Exists('..\..\..\packages\Microsoft.UI.Xaml.2.5.0-prerelease.200609001\build\native\Microsoft.UI.Xaml.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -156,6 +176,5 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\Microsoft.UI.Xaml.2.5.0-prerelease.200609001\build\native\Microsoft.UI.Xaml.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.UI.Xaml.2.5.0-prerelease.200609001\build\native\Microsoft.UI.Xaml.targets'))" />
   </Target>
-
   <Import Project="$(SolutionDir)build\rules\CollectWildcardResources.targets" />
 </Project>

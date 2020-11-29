@@ -2965,7 +2965,11 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
                             fullPath = _ReplaceString(fullPath, winDisk[i], wslDisk[i]);
                         }
                     }
-                    
+                    std::wstring wslPrefix = L"//wsl$/Ubuntu";
+                    if (fullPath._Starts_with(wslPrefix))
+                    {
+                        fullPath = _ReplaceString(fullPath, wslPrefix, L"");
+                    }
                     allPaths += L"\"" + fullPath + L"\"";
                 }
                 _SendInputToConnection(allPaths);
